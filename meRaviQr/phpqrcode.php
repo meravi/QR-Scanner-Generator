@@ -952,7 +952,15 @@
     class QRimage {
 
         //----------------------------------------------------------------------
-        public static function png($frame, $filename = false, $pixelPerPoint = 4, $outerFrame = 4,$saveandprint=FALSE, $back_color, $fore_color)
+        public static function png(
+            $frame,
+            $filename = false,
+            $pixelPerPoint = 4,
+            $outerFrame = 4,
+            $saveandprint = false,
+            $back_color = 0xFFFFFF,
+            $fore_color = 0x000000
+        )
         {
             $image = self::image($frame, $pixelPerPoint, $outerFrame, $back_color, $fore_color);
 
@@ -969,7 +977,9 @@
                 }
             }
 
-            ImageDestroy($image);
+            if (PHP_VERSION_ID < 80000) {
+                ImageDestroy($image);
+            }
         }
 
         //----------------------------------------------------------------------
@@ -984,7 +994,9 @@
                 ImageJpeg($image, $filename, $q);
             }
 
-            ImageDestroy($image);
+            if (PHP_VERSION_ID < 80000) {
+                ImageDestroy($image);
+            }
         }
 
         //----------------------------------------------------------------------
@@ -1025,7 +1037,9 @@
 
             $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
             ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
+            if (PHP_VERSION_ID < 80000) {
+                ImageDestroy($base_image);
+            }
 
             return $target_image;
         }
@@ -2965,14 +2979,14 @@
 
             if($this->count < $this->dataLength) {
                 $row = $this->count % $this->blocks;
-                $col = $this->count / $this->blocks;
+                $col = intdiv($this->count, $this->blocks);
                 if($col >= $this->rsblocks[0]->dataLength) {
                     $row += $this->b1;
                 }
                 $ret = $this->rsblocks[$row]->data[$col];
             } else if($this->count < $this->dataLength + $this->eccLength) {
                 $row = ($this->count - $this->dataLength) % $this->blocks;
-                $col = ($this->count - $this->dataLength) / $this->blocks;
+                $col = intdiv($this->count - $this->dataLength, $this->blocks);
                 $ret = $this->rsblocks[$row]->ecc[$col];
             } else {
                 return 0;
@@ -3115,7 +3129,7 @@
         public static function png($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false, $back_color = 0xFFFFFF, $fore_color = 0x000000) 
         {
             $enc = QRencode::factory($level, $size, $margin, $back_color, $fore_color);
-            return $enc->encodePNG($text, $outfile, $saveandprint=false);
+            return $enc->encodePNG($text, $outfile, $saveandprint);
         }
 
         //----------------------------------------------------------------------
@@ -3129,14 +3143,14 @@
         public static function eps($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false, $back_color = 0xFFFFFF, $fore_color = 0x000000, $cmyk = false) 
         {
             $enc = QRencode::factory($level, $size, $margin, $back_color, $fore_color, $cmyk);
-            return $enc->encodeEPS($text, $outfile, $saveandprint=false);
+            return $enc->encodeEPS($text, $outfile, $saveandprint);
         }
         
         //----------------------------------------------------------------------
         public static function svg($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false, $back_color = 0xFFFFFF, $fore_color = 0x000000)
         {
             $enc = QRencode::factory($level, $size, $margin, $back_color, $fore_color);
-            return $enc->encodeSVG($text, $outfile, $saveandprint=false);
+            return $enc->encodeSVG($text, $outfile, $saveandprint);
         }
 
         //----------------------------------------------------------------------
@@ -3249,6 +3263,7 @@
         public $margin = 4;
         public $back_color = 0xFFFFFF;
         public $fore_color = 0x000000;
+        public $cmyk = false;
         
         public $structured = 0; // not supported yet
         
@@ -3546,7 +3561,15 @@
         }
         
         //----------------------------------------------------------------------
-        public static function svg($frame, $filename = false, $pixelPerPoint = 4, $outerFrame = 4,$saveandprint=FALSE, $back_color, $fore_color) 
+        public static function svg(
+            $frame,
+            $filename = false,
+            $pixelPerPoint = 4,
+            $outerFrame = 4,
+            $saveandprint = false,
+            $back_color = 0xFFFFFF,
+            $fore_color = 0x000000
+        )
         {
             $vect = self::vectSVG($frame, $pixelPerPoint, $outerFrame, $back_color, $fore_color);
             
@@ -3621,5 +3644,3 @@
     }
     
     
-
-

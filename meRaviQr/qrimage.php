@@ -27,7 +27,15 @@
     class QRimage {
 
         //----------------------------------------------------------------------
-        public static function png($frame, $filename = false, $pixelPerPoint = 4, $outerFrame = 4,$saveandprint=FALSE, $back_color, $fore_color)
+        public static function png(
+            $frame,
+            $filename = false,
+            $pixelPerPoint = 4,
+            $outerFrame = 4,
+            $saveandprint = false,
+            $back_color = 0xFFFFFF,
+            $fore_color = 0x000000
+        )
         {
             $image = self::image($frame, $pixelPerPoint, $outerFrame, $back_color, $fore_color);
 
@@ -44,7 +52,9 @@
                 }
             }
 
-            ImageDestroy($image);
+            if (PHP_VERSION_ID < 80000) {
+                ImageDestroy($image);
+            }
         }
 
         //----------------------------------------------------------------------
@@ -59,7 +69,9 @@
                 ImageJpeg($image, $filename, $q);
             }
 
-            ImageDestroy($image);
+            if (PHP_VERSION_ID < 80000) {
+                ImageDestroy($image);
+            }
         }
 
         //----------------------------------------------------------------------
@@ -100,7 +112,9 @@
 
             $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
             ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
+            if (PHP_VERSION_ID < 80000) {
+                ImageDestroy($base_image);
+            }
 
             return $target_image;
         }
